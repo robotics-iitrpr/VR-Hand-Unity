@@ -11,6 +11,8 @@ public class SerialCommunication : MonoBehaviour
 
     [SerializeField]
     private HandController hand;
+    [SerializeField]
+    private CameraController myCamera;
 
     [SerializeField]
     private FingerController thumb1, thumb2, thumb3;
@@ -43,8 +45,10 @@ public class SerialCommunication : MonoBehaviour
             incomingMsg = port.ReadTo(";");
             if (incomingMsg != "")
             {
-                // Spliting data for Index, Middle and Ring
-                string[] flexTypeData = incomingMsg.Split("|");
+                // Spliting data for Flex and IMU
+                string[] typeData = incomingMsg.Split("~");
+                string[] flexTypeData = typeData[0].Split("|");
+                string[] imuTypeData = typeData[1].Split("|");
                 // Index Finger
                 index1.Rotate(float.Parse(flexTypeData[0], CultureInfo.InvariantCulture.NumberFormat), 0, 0);
                 index2.Rotate(float.Parse(flexTypeData[0], CultureInfo.InvariantCulture.NumberFormat), 0, 0);
@@ -65,6 +69,9 @@ public class SerialCommunication : MonoBehaviour
                 pinky1.Rotate(float.Parse(flexTypeData[4], CultureInfo.InvariantCulture.NumberFormat), 0, 0);
                 pinky2.Rotate(float.Parse(flexTypeData[4], CultureInfo.InvariantCulture.NumberFormat), 0, 0);
                 pinky3.Rotate(float.Parse(flexTypeData[4], CultureInfo.InvariantCulture.NumberFormat), 0, 0);
+
+                hand.Enact(float.Parse(imuTypeData[0], CultureInfo.InvariantCulture.NumberFormat));
+                myCamera.Enact(float.Parse(imuTypeData[1], CultureInfo.InvariantCulture.NumberFormat));
             }
         }
     }
